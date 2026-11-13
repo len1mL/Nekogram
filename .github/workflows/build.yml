@@ -48,6 +48,9 @@ jobs:
             "configuration_version": "1"
           }
           EOF
+                - name: Increase Gradle memory
+        run: |
+          echo "org.gradle.jvmargs=-Xmx8g -XX:MaxMetaspaceSize=3g -XX:+UseParallelGC" >> gradle.properties
       - name: Build
         run: |
           chmod +x gradlew
