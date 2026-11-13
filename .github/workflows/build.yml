@@ -18,11 +18,39 @@ jobs:
       - name: Install native tools
         run: sudo apt-get update && sudo apt-get install -y nasm ninja-build
       - uses: dtolnay/rust-toolchain@stable
+      - name: Create placeholder google-services.json
+        run: |
+          cat > TMessagesProj_App/google-services.json <<'EOF'
+          {
+            "project_info": { "project_number": "000000000000", "project_id": "nekogram-debug" },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+                  "android_client_info": { "package_name": "tw.nekomimi.nekogram" }
+                },
+                "oauth_client": [ { "client_id": "000000000000-placeholder.apps.googleusercontent.com", "client_type": 3 } ],
+                "api_key": [ { "current_key": "AIzaSyDUMMY-PLACEHOLDER-000000000000" } ]
+              },
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000001",
+                  "android_client_info": { "package_name": "tw.nekomimi.nekogram.beta" }
+                },
+                "oauth_client": [ { "client_id": "000000000000-placeholder.apps.googleusercontent.com", "client_type": 3 } ],
+                "api_key": [ { "current_key": "AIzaSyDUMMY-PLACEHOLDER-000000000000" } ]
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
       - name: Build
         run: |
           chmod +x gradlew
-          ./gradlew :TMessagesProj_App:assembleDebug --no-daemon --stacktrace
+          ./gradlew :TMessagesProj_App:assembleDebug -Pandroid.injected.build.abi=arm64-v8a --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: nekogram-apk
           path: '**/build/outputs/apk/**/*.apk'
+          retention-days: 3
+          compression-level: 0
